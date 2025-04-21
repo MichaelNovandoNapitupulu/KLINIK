@@ -21,24 +21,26 @@
 
 <section class="content">
     <div class="container-fluid">
+
         <!-- Form Tambah Obat -->
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h3 class="card-title">Periksa</h3>
+                <h3 class="card-title">Tambah Obat</h3>
             </div>
             <div class="card-body">
-                <form>
+                <form action="{{ route('dokter.obat.store') }}" method="POST">
+                    @csrf
                     <div class="form-group">
                         <label>Nama Obat</label>
-                        <input type="text" class="form-control" placeholder="Input obat's name">
+                        <input type="text" name="nama_obat" class="form-control" placeholder="Input nama obat" required>
                     </div>
                     <div class="form-group">
                         <label>Kemasan</label>
-                        <input type="text" class="form-control" placeholder="Input kemasan's name">
+                        <input type="text" name="kemasan" class="form-control" placeholder="Input kemasan" required>
                     </div>
                     <div class="form-group">
                         <label>Harga</label>
-                        <input type="number" class="form-control" placeholder="Input the price">
+                        <input type="number" name="harga" class="form-control" placeholder="Input harga" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Tambah Obat</button>
                 </form>
@@ -50,12 +52,16 @@
             <div class="card-header">
                 <h3 class="card-title">List Obat</h3>
                 <div class="card-tools">
-                    <div class="input-group input-group-sm" style="width: 150px;">
-                        <input type="text" name="search" class="form-control float-right" placeholder="Search">
-                        <div class="input-group-append">
-                            <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+                    <form action="{{ route('dokter.obat.index') }}" method="GET">
+                        <div class="input-group input-group-sm" style="width: 200px;">
+                            <input type="text" name="search" class="form-control float-right" placeholder="Search" value="{{ request('search') }}">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
             <div class="card-body table-responsive p-0">
@@ -71,39 +77,27 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @forelse ($obats as $index => $obat)
                         <tr>
-                            <td>1</td>
-                            <td>B001</td>
-                            <td>Paracetamol</td>
-                            <td>pil</td>
-                            <td>15000</td>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $obat->id }}</td>
+                            <td>{{ $obat->nama_obat }}</td>
+                            <td>{{ $obat->kemasan }}</td>
+                            <td>{{ number_format($obat->harga, 0, ',', '.') }}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm">Edit</button>
-                                <button class="btn btn-danger btn-sm">Hapus</button>
+                                <a href="{{ route('dokter.obat.edit', $obat->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{{ route('dokter.obat.destroy', $obat->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                </form>
                             </td>
                         </tr>
+                        @empty
                         <tr>
-                            <td>2</td>
-                            <td>B002</td>
-                            <td>Mixagrip</td>
-                            <td>Pil</td>
-                            <td>20000</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm">Edit</button>
-                                <button class="btn btn-danger btn-sm">Hapus</button>
-                            </td>
+                            <td colspan="6" class="text-center">Belum ada data obat.</td>
                         </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>B003</td>
-                            <td>Promag</td>
-                            <td>pil</td>
-                            <td>50000</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm">Edit</button>
-                                <button class="btn btn-danger btn-sm">Hapus</button>
-                            </td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
